@@ -1,9 +1,12 @@
 import json
 
+from django.contrib.auth.models import User
+
 from api.models import Product, CartItem, Order, Cart
 from django.http import JsonResponse
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
 
 
 @csrf_exempt
@@ -63,6 +66,16 @@ def create_order(request):
         order.cart_items.add(*cart.cart_items.all())
         cart.cart_items.clear()
         cart.update_price()
+        email_list = []
+        for user in User.objects.filter(is_superuser=True):
+            email_list.append(user.email)
+        send_mail(
+            'New order',
+            'username =>' + order.username,
+            'from@example.com',
+            [email_list],
+        )
+        print(email_list)
         return JsonResponse({
             'status': True,
             'email': cart.user.email,

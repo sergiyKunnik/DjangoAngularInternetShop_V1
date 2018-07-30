@@ -12,7 +12,6 @@ def register(request):
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-        print(body)
 
         if body['password'] != body['password1']:
             return JsonResponse({'status': False, 'message': 'error passwords'})
